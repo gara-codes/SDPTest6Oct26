@@ -1,52 +1,63 @@
-import { useEffect, useState } from 'react';
-
-const roadmap = [
-  ['Repository ingestion', 'clone a remote URL or upload a zip of a repo'],
-  ['Metric engine', 'file, directory, repository, commit-set and author metrics'],
-  ['Dashboard', 'charts, tables and filters: author, path, time range, commits'],
-  ['Author merging', 'via .mailmap and manual identity merging'],
-];
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { api } from './api.js';
+import AddRepoPanel from './components/AddRepoPanel.jsx';
+import RepoCard from './components/RepoCard.jsx';
 
 export default function App() {
-  const [api, setApi] = useState('checking');
+  const [repos, setRepos] = useState(null); // null while loading
+  const [error, setError] = useState(null);
+  const busyRef = useRef(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch('/api/health')
-      .then((r) => r.json())
-      .then((d) => {
-        if (!cancelled) setApi(d.ok ? 'online' : 'unexpected');
-      })
-      .catch(() => {
-        if (!cancelled) setApi('offline');
-      });
-    return () => {
-      cancelled = true;
-    };
+  const refresh = useCallback(async () => {
+    try {
+      const data = await api.listRepos();
+      setRepos(data.repos);
+      setError(null);
+      busyRef.current = data.repos.some((r) => r.status === 'cloning' || r.status === 'extracting');
+    } catch (err) {
+      setError(err.message);
+    }
   }, []);
 
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  // Poll only while an ingest job is in flight.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (busyRef.current) refresh();
+    }, 1500);
+    return () => clearInterval(timer);
+  }, [refresh]);
+
   return (
-    <main className="shell">
+    <main className="shell wide">
       <header>
         <h1>RAT</h1>
         <p className="tagline">Repo Analysis Tool</p>
       </header>
 
-      <section className="card">
-        <h2>Scaffold is up</h2>
-        <p>The dashboard shell and API are running. Features land here one at a time:</p>
-        <ul className="roadmap">
-          {roadmap.map(([title, note]) => (
-            <li key={title}>
-              <strong>{title}</strong>
-              <span>{note}</span>
-            </li>
+      <AddRepoPanel onAdded={refresh} />
+
+      {error && <div className="banner error">{error}</div>}
+
+      {repos === null && !error && <p className="muted">Loading repositories…</p>}
+
+      {repos !== null && repos.length === 0 && (
+        <section className="card empty">
+          <h2>No repositories yet</h2>
+          <p>Clone one from a URL or upload a zip above to get started.</p>
+        </section>
+      )}
+
+      {repos !== null && repos.length > 0 && (
+        <section className="repo-grid">
+          {repos.map((repo) => (
+            <RepoCard key={repo.id} repo={repo} onChanged={refresh} />
           ))}
-        </ul>
-        <p className="api-line">
-          API status: <span className={`status ${api}`}>{api}</span>
-        </p>
-      </section>
+        </section>
+      )}
     </main>
   );
 }
