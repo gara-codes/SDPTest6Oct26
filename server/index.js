@@ -1,5 +1,6 @@
 import express from 'express';
 import fs from 'node:fs';
+import fsp from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import multer from 'multer';
@@ -82,7 +83,7 @@ app.post('/api/repos/upload', (req, res) => {
     const { entry, done } = startZipIngest(store, req.file.path, original);
     done
       .catch(() => {})
-      .finally(() => fs.rm(req.file.path, { force: true }).catch(() => {}));
+      .finally(() => fsp.rm(req.file.path, { force: true }).catch(() => {}));
     res.status(202).json({ repo: entry });
   });
 });
