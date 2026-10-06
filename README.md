@@ -16,6 +16,12 @@ computes the metrics defined in the COMS3011A test brief:
 Requires Node.js 18+ and a git binary on PATH.
 
 ```bash
+./start.sh        # installs deps (first run) and starts API + dashboard
+```
+
+or manually:
+
+```bash
 npm install
 
 # Development: API on http://localhost:3001, dashboard on http://localhost:5173
