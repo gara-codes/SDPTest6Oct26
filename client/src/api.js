@@ -28,4 +28,38 @@ export const api = {
   },
 
   deleteRepo: (id) => fetch(`/api/repos/${encodeURIComponent(id)}`, { method: 'DELETE' }).then(jsonOrThrow),
+
+  getMetrics: (id, params = {}) => {
+    const q = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') q.set(k, v);
+    });
+    const qs = q.toString();
+    return fetch(`/api/repos/${encodeURIComponent(id)}/metrics${qs ? `?${qs}` : ''}`).then(jsonOrThrow);
+  },
+
+  getAuthors: (id) => fetch(`/api/repos/${encodeURIComponent(id)}/authors`).then(jsonOrThrow),
+
+  getCommits: (id, params = {}) => {
+    const q = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') q.set(k, v);
+    });
+    const qs = q.toString();
+    return fetch(`/api/repos/${encodeURIComponent(id)}/commits${qs ? `?${qs}` : ''}`).then(jsonOrThrow);
+  },
+
+  mergeAuthors: (id, members) =>
+    fetch(`/api/repos/${encodeURIComponent(id)}/authors/merge`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ members }),
+    }).then(jsonOrThrow),
+
+  unmergeAuthors: (id, member) =>
+    fetch(`/api/repos/${encodeURIComponent(id)}/authors/unmerge`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ member }),
+    }).then(jsonOrThrow),
 };

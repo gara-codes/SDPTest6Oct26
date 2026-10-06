@@ -2,10 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api.js';
 import AddRepoPanel from './components/AddRepoPanel.jsx';
 import RepoCard from './components/RepoCard.jsx';
+import RepoView from './components/RepoView.jsx';
 
 export default function App() {
   const [repos, setRepos] = useState(null); // null while loading
   const [error, setError] = useState(null);
+  const [selected, setSelected] = useState(null); // repo entry being viewed
   const busyRef = useRef(false);
 
   const refresh = useCallback(async () => {
@@ -31,6 +33,10 @@ export default function App() {
     return () => clearInterval(timer);
   }, [refresh]);
 
+  if (selected) {
+    return <RepoView repo={selected} onExit={() => { setSelected(null); refresh(); }} />;
+  }
+
   return (
     <main className="shell wide">
       <header>
@@ -54,7 +60,7 @@ export default function App() {
       {repos !== null && repos.length > 0 && (
         <section className="repo-grid">
           {repos.map((repo) => (
-            <RepoCard key={repo.id} repo={repo} onChanged={refresh} />
+            <RepoCard key={repo.id} repo={repo} onChanged={refresh} onOpen={() => setSelected(repo)} />
           ))}
         </section>
       )}

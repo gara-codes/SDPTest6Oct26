@@ -15,7 +15,7 @@ function fmtDate(ts) {
   return ts ? new Date(ts).toLocaleDateString() : '—';
 }
 
-export default function RepoCard({ repo, onChanged }) {
+export default function RepoCard({ repo, onChanged, onOpen }) {
   const transient = repo.status === 'cloning' || repo.status === 'extracting';
 
   async function handleDelete() {
@@ -57,10 +57,12 @@ export default function RepoCard({ repo, onChanged }) {
       </dl>
 
       <div className="repo-actions">
+        <button onClick={onOpen} disabled={repo.status !== 'ready'}>
+          Open dashboard
+        </button>
         <button className="danger" onClick={handleDelete} disabled={transient}>
           Remove
         </button>
-        <span className="muted small">Metrics dashboard lands in F3</span>
       </div>
     </article>
   );

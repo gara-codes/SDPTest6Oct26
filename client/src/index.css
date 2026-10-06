@@ -317,3 +317,221 @@ button.danger {
 .card.empty p {
   color: #8b949e;
 }
+
+/* --- dashboard --- */
+
+.dash-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dash-title {
+  margin: 0;
+  font-size: 28px;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding: 14px 18px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-item.grow {
+  flex: 1;
+  min-width: 220px;
+}
+
+.filter-item label {
+  color: #8b949e;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-item input,
+.filter-item select {
+  padding: 7px 10px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #e6edf3;
+  font-size: 13px;
+}
+
+.filter-item select {
+  max-width: 340px;
+}
+
+.filter-note {
+  align-self: center;
+}
+
+.metric-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.metric-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.metric-card.good .metric-value {
+  color: #3fb950;
+}
+
+.metric-card.bad .metric-value {
+  color: #f85149;
+}
+
+.metric-value {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-label {
+  color: #8b949e;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.chart-box {
+  margin-top: 8px;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 20px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px;
+}
+
+.crumb {
+  padding: 2px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #58a6ff;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.crumb:hover {
+  background: #161b22;
+  border-color: #30363d;
+}
+
+.crumb-sep {
+  color: #8b949e;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.data-table th {
+  text-align: left;
+  color: #8b949e;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #30363d;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.data-table th.num,
+.data-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #21262d;
+}
+
+.data-table tbody tr:hover {
+  background: #161b22;
+}
+
+.row-click {
+  cursor: pointer;
+}
+
+.name-cell {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  max-width: 420px;
+  overflow-wrap: anywhere;
+}
+
+.obj-dir {
+  color: #58a6ff;
+}
+
+.obj-file {
+  color: #8b949e;
+}
+
+.good {
+  color: #3fb950;
+}
+
+.bad {
+  color: #f85149;
+}
+
+.sort-arrow {
+  color: #58a6ff;
+}
+
+.ownership {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.ownership-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #1f6feb, #58a6ff);
+  min-width: 2px;
+}
+
+.ownership-val {
+  color: #8b949e;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dash-head + .filter-bar {
+  margin-top: 20px;
+}
