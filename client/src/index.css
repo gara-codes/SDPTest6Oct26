@@ -535,3 +535,93 @@ button.danger {
 .dash-head + .filter-bar {
   margin-top: 20px;
 }
+
+/* ---- RepoView tabs ---- */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  color: #8b949e;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.tab:hover {
+  color: #e6edf3;
+}
+
+.tab.active {
+  background: #21262d;
+  color: #e6edf3;
+}
+
+.dash-head + .authors-panel {
+  margin-top: 20px;
+}
+
+/* ---- Authors panel ---- */
+
+.authors-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.authors-toolbar input {
+  flex: 0 1 280px;
+}
+
+.authors-panel .data-table td.chk,
+.authors-panel .data-table th.chk {
+  width: 28px;
+  text-align: center;
+}
+
+.authors-panel .data-table input[type='checkbox'] {
+  accent-color: #1f6feb;
+  cursor: pointer;
+}
+
+.sel-row {
+  background: rgba(31, 111, 235, 0.12);
+}
+
+.identities-cell {
+  max-width: 480px;
+  word-break: break-all;
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  color: #58a6ff;
+  cursor: pointer;
+  padding: 2px 4px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.link-btn:disabled {
+  color: #484f58;
+  cursor: default;
+  text-decoration: none;
+}

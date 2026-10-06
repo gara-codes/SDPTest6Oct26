@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { api } from '../api.js';
+import AuthorsPanel from './AuthorsPanel.jsx';
 
 const fmt = (n) => (n == null ? '—' : n.toLocaleString());
 const fmtNum = (n) => (n == null ? '—' : Number(n.toFixed(3)).toString());
@@ -165,27 +166,27 @@ function AuthorsTable({ byAuthor }) {
 }
 
 export default function RepoView({ repo, onExit }) {
+  const [view, setView] = useState('dashboard');
   const [path, setPath] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [author, setAuthor] = useState('');
   const [metrics, setMetrics] = useState(null);
   const [authors, setAuthors] = useState([]);
+  const [authorsVersion, setAuthorsVersion] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  const reloadAuthors = useCallback(() => {
     api
       .getAuthors(repo.id)
-      .then((d) => {
-        if (!cancelled) setAuthors(d.authors);
-      })
+      .then((d) => setAuthors(d.authors))
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
   }, [repo.id]);
+
+  useEffect(() => {
+    reloadAuthors();
+  }, [reloadAuthors]);
 
   useEffect(() => {
     let cancelled = false;
@@ -216,7 +217,14 @@ export default function RepoView({ repo, onExit }) {
     return () => {
       cancelled = true;
     };
-  }, [repo.id, path, from, to, author]);
+  }, [repo.id, path, from, to, author, authorsVersion]);
+
+  // Identity changes (merge/unmerge) can invalidate the author filter.
+  const onIdentitiesChanged = useCallback(() => {
+    setAuthor('');
+    reloadAuthors();
+    setAuthorsVersion((v) => v + 1);
+  }, [reloadAuthors]);
 
   const hardRange = to !== '' && from !== '';
 
@@ -228,8 +236,21 @@ export default function RepoView({ repo, onExit }) {
         <span className="muted small">
           {repo.commits?.toLocaleString()} commits · {repo.head?.slice(0, 10)}
         </span>
+        <div className="tabs">
+          <button className={view === 'dashboard' ? 'tab active' : 'tab'} onClick={() => setView('dashboard')}>
+            Dashboard
+          </button>
+          <button className={view === 'authors' ? 'tab active' : 'tab'} onClick={() => setView('authors')}>
+            Authors
+          </button>
+        </div>
       </header>
 
+      {view === 'authors' && (
+        <AuthorsPanel repo={repo} authors={authors} onChanged={onIdentitiesChanged} />
+      )}
+
+      {view === 'dashboard' && (
       <section className="card filter-bar">
         <div className="filter-item">
           <label>From</label>
@@ -264,11 +285,12 @@ export default function RepoView({ repo, onExit }) {
         </div>
         {hardRange && <span className="muted small filter-note">Range [from, to)</span>}
       </section>
+      )}
 
-      {error && <div className="banner error">{error}</div>}
-      {loading && !metrics && <p className="muted">Computing metrics…</p>}
+      {view === 'dashboard' && error && <div className="banner error">{error}</div>}
+      {view === 'dashboard' && loading && !metrics && <p className="muted">Computing metrics…</p>}
 
-      {metrics && (
+      {view === 'dashboard' && metrics && (
         <>
           <Breadcrumbs path={path} onNavigate={setPath} />
           <MetricCards m={metrics} />
