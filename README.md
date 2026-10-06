@@ -115,4 +115,3 @@ Developed with AI assistance (Qoder AI coding assistant) for planning, implement
 and testing, alongside manual review and testing by the author. All generated code
 was reviewed, run and adjusted by the author before being committed.
 
-> Note: adjust this declaration to match the course's required AI-usage policy.
