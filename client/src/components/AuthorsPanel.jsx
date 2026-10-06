@@ -3,7 +3,7 @@ import { api } from '../api.js';
 
 const fmt = (n) => (n == null ? '—' : n.toLocaleString());
 
-export default function AuthorsPanel({ repo, authors, onChanged }) {
+export default function AuthorsPanel({ repo, authors, loading, onChanged }) {
   const [selected, setSelected] = useState(() => new Set());
   const [filter, setFilter] = useState('');
   const [busy, setBusy] = useState(false);
@@ -117,7 +117,9 @@ export default function AuthorsPanel({ repo, authors, onChanged }) {
           {rows.length === 0 && (
             <tr>
               <td colSpan={5} className="muted small">
-                No identities match the filter.
+                {loading
+                  ? 'Loading authors… (first analysis of a large repo can take ~30s)'
+                  : 'No identities match the filter.'}
               </td>
             </tr>
           )}

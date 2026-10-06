@@ -175,15 +175,18 @@ export default function RepoView({ repo, onExit }) {
   const [commitSet, setCommitSet] = useState(null); // null = full commit set; array = explicit subset
   const [metrics, setMetrics] = useState(null);
   const [authors, setAuthors] = useState([]);
+  const [authorsLoading, setAuthorsLoading] = useState(true);
   const [authorsVersion, setAuthorsVersion] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const reloadAuthors = useCallback(() => {
+    setAuthorsLoading(true);
     api
       .getAuthors(repo.id)
       .then((d) => setAuthors(d.authors))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setAuthorsLoading(false));
   }, [repo.id]);
 
   useEffect(() => {
@@ -253,7 +256,7 @@ export default function RepoView({ repo, onExit }) {
       </header>
 
       {view === 'authors' && (
-        <AuthorsPanel repo={repo} authors={authors} onChanged={onIdentitiesChanged} />
+        <AuthorsPanel repo={repo} authors={authors} loading={authorsLoading} onChanged={onIdentitiesChanged} />
       )}
 
       {view === 'commits' && (
