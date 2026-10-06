@@ -30,6 +30,14 @@ export const api = {
   deleteRepo: (id) => fetch(`/api/repos/${encodeURIComponent(id)}`, { method: 'DELETE' }).then(jsonOrThrow),
 
   getMetrics: (id, params = {}) => {
+    // Large explicit commit selections go in a POST body to avoid URL length limits.
+    if (Array.isArray(params.commits)) {
+      return fetch(`/api/repos/${encodeURIComponent(id)}/metrics`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(params),
+      }).then(jsonOrThrow);
+    }
     const q = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {
       if (v !== undefined && v !== null && v !== '') q.set(k, v);

@@ -625,3 +625,59 @@ button.danger {
   cursor: default;
   text-decoration: none;
 }
+
+/* ---- Commit browser ---- */
+
+.banner.info {
+  background: rgba(31, 111, 235, 0.15);
+  border: 1px solid #1f6feb;
+  color: #79c0ff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 16px 0 0;
+  font-size: 13px;
+}
+
+.dash-head + .commits-panel {
+  margin-top: 20px;
+}
+
+.commits-panel .data-table td.chk,
+.commits-panel .data-table th.chk {
+  width: 28px;
+  text-align: center;
+}
+
+.commits-panel .data-table input[type='checkbox'] {
+  accent-color: #1f6feb;
+  cursor: pointer;
+}
+
+.commit-hash {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: #58a6ff;
+  white-space: nowrap;
+}
+
+.commit-subject {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.small-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}

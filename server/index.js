@@ -112,27 +112,45 @@ async function requireReadyRepo(req, res) {
   return entry;
 }
 
+async function computeMetricsFor(entry, source) {
+  const parsed = await getParsed(store, entry);
+  const authorMap = await getAuthorMap(store, entry, parsed);
+  let explicit = null;
+  if (Array.isArray(source.commits)) {
+    explicit = new Set(
+      source.commits.filter((s) => typeof s === 'string' && s.trim()).map((s) => s.trim())
+    );
+  } else if (typeof source.commits === 'string' && source.commits.trim()) {
+    explicit = new Set(source.commits.split(',').map((s) => s.trim()).filter(Boolean));
+  }
+  const num = (v) => (v !== undefined && v !== null && v !== '' ? Number(v) : undefined);
+  return computeMetrics(parsed, {
+    path: typeof source.path === 'string' ? source.path : '',
+    since: num(source.since),
+    until: num(source.until),
+    commits: explicit,
+    author: typeof source.author === 'string' && source.author ? source.author : undefined,
+    authorMap,
+  });
+}
+
 app.get('/api/repos/:id/metrics', async (req, res) => {
   try {
     const entry = await requireReadyRepo(req, res);
     if (!entry) return;
-    const parsed = await getParsed(store, entry);
-    const authorMap = await getAuthorMap(store, entry, parsed);
-    const q = req.query;
-    let explicit = null;
-    if (typeof q.commits === 'string' && q.commits.trim()) {
-      explicit = new Set(q.commits.split(',').map((s) => s.trim()).filter(Boolean));
-    }
-    const num = (v) => (v !== undefined && v !== null && v !== '' ? Number(v) : undefined);
-    const metrics = computeMetrics(parsed, {
-      path: typeof q.path === 'string' ? q.path : '',
-      since: num(q.since),
-      until: num(q.until),
-      commits: explicit,
-      author: typeof q.author === 'string' && q.author ? q.author : undefined,
-      authorMap,
-    });
-    res.json(metrics);
+    res.json(await computeMetricsFor(entry, req.query));
+  } catch (err) {
+    res.status(500).json({ error: { message: err.message || 'metric computation failed' } });
+  }
+});
+
+// POST variant: same computation, but accepts a large explicit commit list in the body
+// (a GET query string would overflow URL limits for big selections).
+app.post('/api/repos/:id/metrics', async (req, res) => {
+  try {
+    const entry = await requireReadyRepo(req, res);
+    if (!entry) return;
+    res.json(await computeMetricsFor(entry, req.body || {}));
   } catch (err) {
     res.status(500).json({ error: { message: err.message || 'metric computation failed' } });
   }

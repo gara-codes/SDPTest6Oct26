@@ -4,6 +4,7 @@ import {
 } from 'recharts';
 import { api } from '../api.js';
 import AuthorsPanel from './AuthorsPanel.jsx';
+import CommitsPanel from './CommitsPanel.jsx';
 
 const fmt = (n) => (n == null ? '—' : n.toLocaleString());
 const fmtNum = (n) => (n == null ? '—' : Number(n.toFixed(3)).toString());
@@ -171,6 +172,7 @@ export default function RepoView({ repo, onExit }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [author, setAuthor] = useState('');
+  const [commitSet, setCommitSet] = useState(null); // null = full commit set; array = explicit subset
   const [metrics, setMetrics] = useState(null);
   const [authors, setAuthors] = useState([]);
   const [authorsVersion, setAuthorsVersion] = useState(0);
@@ -200,6 +202,7 @@ export default function RepoView({ repo, onExit }) {
       // "from X to present": use since only (H_t semantics)
     }
     if (author) params.author = author;
+    if (commitSet) params.commits = commitSet;
     api
       .getMetrics(repo.id, params)
       .then((m) => {
@@ -217,7 +220,7 @@ export default function RepoView({ repo, onExit }) {
     return () => {
       cancelled = true;
     };
-  }, [repo.id, path, from, to, author, authorsVersion]);
+  }, [repo.id, path, from, to, author, authorsVersion, commitSet]);
 
   // Identity changes (merge/unmerge) can invalidate the author filter.
   const onIdentitiesChanged = useCallback(() => {
@@ -243,11 +246,26 @@ export default function RepoView({ repo, onExit }) {
           <button className={view === 'authors' ? 'tab active' : 'tab'} onClick={() => setView('authors')}>
             Authors
           </button>
+          <button className={view === 'commits' ? 'tab active' : 'tab'} onClick={() => setView('commits')}>
+            Commits
+          </button>
         </div>
       </header>
 
       {view === 'authors' && (
         <AuthorsPanel repo={repo} authors={authors} onChanged={onIdentitiesChanged} />
+      )}
+
+      {view === 'commits' && (
+        <CommitsPanel
+          repo={repo}
+          active={commitSet}
+          onApply={(hashes) => {
+            setCommitSet(hashes);
+            setView('dashboard');
+          }}
+          onClear={() => setCommitSet(null)}
+        />
       )}
 
       {view === 'dashboard' && (
@@ -285,6 +303,15 @@ export default function RepoView({ repo, onExit }) {
         </div>
         {hardRange && <span className="muted small filter-note">Range [from, to)</span>}
       </section>
+      )}
+
+      {view === 'dashboard' && commitSet && (
+        <div className="banner info">
+          Custom commit set active: {commitSet.length} commits — metrics are restricted to the selection.{' '}
+          <button className="link-btn" onClick={() => setCommitSet(null)}>
+            Use all commits
+          </button>
+        </div>
       )}
 
       {view === 'dashboard' && error && <div className="banner error">{error}</div>}
